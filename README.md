@@ -39,4 +39,8 @@ git config --global user.name "chrisdgenius"
 git config --global user.email okonta.christian@yahoo.com
 git init
 git add .
+git commit -m "project structure"
+git push -u origin main
+git remote -v
+git remote add origin https://github.com/chrisdgenius/aws-data-pipeline.git
 
