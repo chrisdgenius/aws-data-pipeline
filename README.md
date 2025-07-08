@@ -33,3 +33,10 @@ mkdir -p tests/{unit,integration,data_quality}
 mkdir -p monitoring/{cloudwatch_dashboards,alerts}
 mkdir -p scripts
 mkdir -p .github/workflows
+
+# Configure your github for quick commit
+git config --global user.name "chrisdgenius" 
+git config --global user.email okonta.christian@yahoo.com
+git init
+git add .
+
