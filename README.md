@@ -44,3 +44,19 @@ git push -u origin main
 git remote -v
 git remote add origin https://github.com/chrisdgenius/aws-data-pipeline.git
 
+
+#write your terraform code to deploy your infrastructures
+cd to the terraform location to run your terraform
+terraform init
+terrafor plan
+terraform apply
+terraform destroy
+
+
+
+make sure the script is executable
+chmod +x ./scripts/deploy.sh
+
+Run the script
+ENSURE THAT YOU ARE IN THE ROOT DIRECTORY BEFORE RUNNING THE SCRIPT SINCE IT HAVE TO NAVIGATE TO DIFFERENT PATHS
+./deploy.sh dev us-east-1  
