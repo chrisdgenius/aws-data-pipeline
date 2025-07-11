@@ -59,4 +59,4 @@ chmod +x ./scripts/deploy.sh
 
 Run the script
 ENSURE THAT YOU ARE IN THE ROOT DIRECTORY BEFORE RUNNING THE SCRIPT SINCE IT HAVE TO NAVIGATE TO DIFFERENT PATHS
-./deploy.sh dev us-east-1  
+./scripts/deploy.sh dev us-east-1  
