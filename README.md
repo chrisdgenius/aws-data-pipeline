@@ -60,3 +60,40 @@ chmod +x ./scripts/deploy.sh
 Run the script
 ENSURE THAT YOU ARE IN THE ROOT DIRECTORY BEFORE RUNNING THE SCRIPT SINCE IT HAVE TO NAVIGATE TO DIFFERENT PATHS
 ./scripts/deploy.sh dev us-east-1  
+
+Note:
+If a zip file exist, terraform will not upload it.
+so always use the copy command.
+
+
+# Install virtual environment to run python packages
+brew install python@3.11
+
+# 1. Create a virtual environment (in a folder called .venv)
+python3 -m venv venv
+
+# 2. Activate the virtual environment
+source venv/bin/activate
+# Install required build tools, like setuptools, wheel, or build.
+pip install --upgrade pip setuptools wheel build
+
+# 3. Install your packages
+pip install -r requirements.txt
+# Deactivate anytime
+deactivate
+
+# Correcting python version
+brew install python@3.11
+/opt/homebrew/Cellar/python@3.11/3.11.13/bin/python3.11 --version
+
+echo 'export PATH="/opt/homebrew/Cellar/python@3.11/3.11.13/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+
+deactivate
+rm -rf venv
+# Create new python environment
+/opt/homebrew/Cellar/python@3.11/3.11.13/bin/python3.11 -m venv venv
+# this will create a new environment with your specified python version
+source venv/bin/activate
+
+pip install -r requirements.txt
