@@ -97,3 +97,7 @@ rm -rf venv
 source venv/bin/activate
 
 pip install -r requirements.txt
+
+
+# Check status of glue job
+aws glue get-job-runs --job-name aws-data-pipeline-bronze-to-silver-dev
