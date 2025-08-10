@@ -4,3 +4,10 @@
 *.tfstate.backup
 crash.log
 .terraform.lock.hcl.DS_Store
+# Terraform
+*.tfstate
+*.tfstate.*
+.crash
+*.log
+.terraform/
+terraform.tfvars
