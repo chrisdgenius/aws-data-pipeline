@@ -42,8 +42,13 @@ git add .
 git commit -m "project structure"
 git push -u origin main
 git remote -v
+git branch
 git remote add origin https://github.com/chrisdgenius/aws-data-pipeline.git
-
+git branch dev  
+git checkout dev  
+git add .  
+git commit -m " Pushing to dev branch "
+git push -u origin dev   
 
 # write your terraform code to deploy your infrastructures
 cd to the terraform location to run your terraform
