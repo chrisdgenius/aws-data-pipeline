@@ -6,13 +6,17 @@
         "Type": "Task",
         "Resource": "arn:aws:states:::glue:startJobRun.sync",
         "Parameters": {
-          "JobName": "${bronze_job_name}"
+          "JobName": "${bronze_job_name}",
+          "Arguments": {
+            "--raw-data-bucket": "${raw_bucket_name}",
+            "--processed-data-bucket": "${processed_bucket_name}"
+          }
         },
         "Retry": [
           {
             "ErrorEquals": ["States.TaskFailed"],
             "IntervalSeconds": 30,
-            "MaxAttempts": 2,
+            "MaxAttempts": 1,
             "BackoffRate": 2.0
           }
         ],
@@ -30,13 +34,17 @@
         "Type": "Task",
         "Resource": "arn:aws:states:::glue:startJobRun.sync",
         "Parameters": {
-          "JobName": "${silver_job_name}"
+          "JobName": "${silver_job_name}",
+          "Arguments": {
+            "--raw-data-bucket": "${raw_bucket_name}",
+            "--processed-data-bucket": "${processed_bucket_name}"
+          }
         },
         "Retry": [
           {
             "ErrorEquals": ["States.TaskFailed"],
             "IntervalSeconds": 30,
-            "MaxAttempts": 2,
+            "MaxAttempts": 1,
             "BackoffRate": 2.0
           }
         ],

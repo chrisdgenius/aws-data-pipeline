@@ -1,5 +1,6 @@
 import json
 import boto3
+import os
 import logging
 from datetime import datetime
 
@@ -9,42 +10,54 @@ logger.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
     """
-    Lambda function to trigger the data pipeline
+    Lambda function to trigger the data pipeline via Step Functions
     """
-    glue_client = boto3.client('glue')
+    stepfunctions_client = boto3.client('stepfunctions')
     
     try:
-        # Get job name from environment variable
-        job_name = os.environ.get('GLUE_JOB_NAME')
+        # Get Step Function ARN from environment variable
+        step_function_arn = os.environ.get('STEP_FUNCTION_ARN')
         
-        if not job_name:
-            raise ValueError("GLUE_JOB_NAME environment variable not set")
+        if not step_function_arn:
+            raise ValueError("STEP_FUNCTION_ARN environment variable not set")
         
-        # Start Glue job
-        response = glue_client.start_job_run(
-            JobName=job_name,
-            Arguments={
-                '--execution-date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            }
+        # Prepare execution input with timestamp and any event data
+        execution_input = {
+            'execution_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'trigger_event': event,
+            'environment': os.environ.get('ENVIRONMENT', 'unknown')
+        }
+        
+        # Generate unique execution name with timestamp
+        execution_name = f"pipeline-execution-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+        
+        # Start Step Function execution
+        response = stepfunctions_client.start_execution(
+            stateMachineArn=step_function_arn,
+            name=execution_name,
+            input=json.dumps(execution_input)
         )
         
-        job_run_id = response['JobRunId']
-        logger.info(f"Started Glue job {job_name} with run ID: {job_run_id}")
+        execution_arn = response['executionArn']
+        logger.info(f"Started Step Function execution: {execution_name}")
+        logger.info(f"Execution ARN: {execution_arn}")
         
         return {
             'statusCode': 200,
             'body': json.dumps({
-                'message': f'Successfully triggered pipeline job: {job_name}',
-                'job_run_id': job_run_id
+                'message': f'Successfully triggered data pipeline',
+                'execution_name': execution_name,
+                'execution_arn': execution_arn,
+                'step_function_arn': step_function_arn
             })
         }
-       # End Glue job
+        
     except Exception as e:
         logger.error(f"Error triggering pipeline: {str(e)}")
         return {
             'statusCode': 500,
             'body': json.dumps({
-                'error': str(e)
+                'error': str(e),
+                'step_function_arn': os.environ.get('STEP_FUNCTION_ARN', 'not_set')
             })
         }
-     # End Glue job
