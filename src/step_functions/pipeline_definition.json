@@ -1,0 +1,85 @@
+{
+    "Comment": "Data Pipeline State Machine - Bronze to Silver to Gold",
+    "StartAt": "StartBronzeToSilver",
+    "States": {
+      "StartBronzeToSilver": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::glue:startJobRun.sync",
+        "Parameters": {
+          "JobName": "${bronze_job_name}",
+          "Arguments": {
+            "--raw-data-bucket": "${raw_bucket_name}",
+            "--processed-data-bucket": "${processed_bucket_name}"
+          }
+        },
+        "Retry": [
+          {
+            "ErrorEquals": ["States.TaskFailed"],
+            "IntervalSeconds": 30,
+            "MaxAttempts": 1,
+            "BackoffRate": 2.0
+          }
+        ],
+        "Catch": [
+          {
+            "ErrorEquals": ["States.ALL"],
+            "Next": "NotifyFailure",
+            "ResultPath": "$.error"
+          }
+        ],
+        "Next": "StartSilverToGold"
+      },
+  
+      "StartSilverToGold": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::glue:startJobRun.sync",
+        "Parameters": {
+          "JobName": "${silver_job_name}",
+          "Arguments": {
+            "--raw-data-bucket": "${raw_bucket_name}",
+            "--processed-data-bucket": "${processed_bucket_name}"
+          }
+        },
+        "Retry": [
+          {
+            "ErrorEquals": ["States.TaskFailed"],
+            "IntervalSeconds": 30,
+            "MaxAttempts": 1,
+            "BackoffRate": 2.0
+          }
+        ],
+        "Catch": [
+          {
+            "ErrorEquals": ["States.ALL"],
+            "Next": "NotifyFailure",
+            "ResultPath": "$.error"
+          }
+        ],
+        "Next": "NotifySuccess"
+      },
+  
+      "NotifySuccess": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::sns:publish",
+        "Parameters": {
+          "TopicArn": "${sns_topic_arn}",
+          "Message": "Data pipeline completed successfully",
+          "Subject": "Pipeline Success - ${project_name}"
+        },
+        "End": true
+      },
+  
+      "NotifyFailure": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::sns:publish",
+        "Parameters": {
+          "TopicArn": "${sns_topic_arn}",
+          "Message": {
+              "text.$": "States.Format('Data pipeline failed. Error details: {}', $.error)"
+          },
+          "Subject": "Pipeline Failure - ${project_name}"
+        },
+        "End": true
+      }
+    }
+  }
