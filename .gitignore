@@ -11,3 +11,4 @@ crash.log
 *.log
 .terraform/
 terraform.tfvars
+.DS_Store
